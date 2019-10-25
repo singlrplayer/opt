@@ -23,36 +23,25 @@ class learnFiles:
                     tmp = [next(files) for x in range(rules.IOcandles['in'][i] + rules.IOcandles['out'][i])]#читаем сразу и вход, и выход
                     for j in range(rules.IOcandles['in'][i]): #записываем вход на вход
                         y = getCandleFrom(tmp[j]) #get one candle
-                        self.getCandleVal(y,rules, i) 
                         self.learnLine['in'].append(self.blurCandle(y,rules, i, True))
-                        if((j - rules.IOcandles['out'][i]) >= 0):
+                        if(j >= rules.IOcandles['out'][i]):
                             self.inputLine.append(self.blurCandle(y,rules, i, True))
                     for j in range(rules.IOcandles['out'][i]): #записываем выход в выход
-                        tmpLine = tmp.pop()
-                        self.candleTmp.append(tmpLine)
-                        y = getCandleFrom(tmpLine)
-                        tmp1 = self.blurCandle(y,rules, i, True)
-                        self.learnLine['out'].append(tmp1)
-                        self.inputLine.append(tmp1)
+                        y = getCandleFrom(tmp[j]) #get one candle
+                        self.learnLine['out'].append(self.blurCandle(y,rules, i, True))
+                        self.inputLine.append(self.blurCandle(y,rules, i, True))
                     learnfile.write(str(self.learnLine['in']) + str(self.learnLine['out']))
                     learnfile.write('\n')
                     inputFile.write(str(self.inputLine))
                     inputFile.write('\n')
-                    lineN = rules.IOcandles['in'][i] + rules.IOcandles['out'][i] #счетчик текущей линии. TODO: разобраться почему встроенные методы не хотят рабоать
                     for line in files: #теперь читаем остаток файла, и реализуем FIFO
-                        lineN +=1
-                        y = getCandleFrom(self.candleTmp[0]) #на вход берем из темпарей сверху, потому как прочитан и вход, и выход. лень скакать туда-сода по файлу, та и долго это
-                        del self.candleTmp[0] #удаляем за ненадобностью
-                        self.candleTmp.append(line) #засовываем свежепрочитанную (сначала она пойдёт на выход, а потом (спустя итераций range(rules.IOcandles['out'][i]) -- на вход))
-                        del self.learnLine['in'][0] #вход тоже передвигаем по истории на одну свечу (для справки: степень достоверности на этом этапе уже не имеет значения)
-                        self.getCandleVal(y,rules, i)
-                        self.learnLine['in'].append(self.blurCandle(y,rules, i, True))
-                        y = getCandleFrom(line) #берем следующую свечу, и кидаем её заблуренную на віход обучающей чепочки, и на вход того, что скормим по завершению обучения
-                        del self.learnLine['out'][0] #выход тоже передвигаем по истории на одну свечу (для справки: степень достоверности на этом этапе уже не имеет значения)
-                        tmp1 = self.blurCandle(y,rules, i, True)
-                        self.learnLine['out'].append(tmp1)
-                        del self.inputLine[0]
-                        self.inputLine.append(tmp1)
+                        self.learnLine['in'].pop(0)
+                        self.learnLine['in'].append(self.learnLine['out'][0])
+                        y = getCandleFrom(line)
+                        self.learnLine['out'].pop(0)
+                        self.learnLine['out'].append(self.blurCandle(y,rules, i, True))
+                        self.inputLine.pop(0)
+                        self.inputLine.append(self.blurCandle(y,rules, i, True))
                         learnfile.write(str(self.learnLine['in']) + str(self.learnLine['out']))
                         inputFile.write(str(self.inputLine))
                         inputFile.write('\n')
