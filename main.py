@@ -33,7 +33,7 @@ print("start creating rows and learning")
 for i in f.candles: 
     print (i)
     if(f.QfilePath[i] != ''): #если есть исходный файл нужной нам свечки
-        f_predict = open("redict.txt",'r')
+        f_predict = open("redict.txt",'a')
         mytime[i] = time.time()
         f1 = candlecreate(f.Qfiles[i], f.TmpFiles[i], int(f.candles_enc[i])) #делаем свечки без пробелов в данных
         f.TmpFiles[i].seek(0)
@@ -104,8 +104,9 @@ for i in f.candles:
         print(layer2)
         print("---------------END---------------")
         print("---learning time %s seconds ---" % (time.time() - mytime[i]))
-        #f_predict.write(str(i) + '\n')
-        f_predict.write(str(layer2))
+        f_predict.write(str(i) + '\n')
+        #f_predict.write(str(layer2))
+        np.savetxt(f_predict,layer2)
         f_predict.write("---learning time in seconds ---" + str(time.time() - mytime[i]) + '\n')
         f_predict.write('---------------------------------\n')
         f_predict.close()
