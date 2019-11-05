@@ -46,10 +46,10 @@ for i in f.candles:
         #f_predict.write(str(i) + '\n')
         ######---------start learn
         startpos = 0
-        startpos = br.createLearnArray(br.IOcandles['in'][i] * 4, br.IOcandles['out'][i] * 4, f.CurFileData, startpos, 3)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
+        startpos = br.createLearnArray(br.IOcandles['in'][i] * lf.encodeSize, br.IOcandles['out'][i] * lf.encodeSize, f.CurFileData, startpos, 3)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
         f.LearnLogF.write(str(i) + '\n')
-        syn0 = 2*np.random.random((br.IOcandles['in'][i], 4)) - 1 #in
-        syn1 = 2*np.random.random((4,br.IOcandles['out'][i])) - 1 #out
+        syn0 = 2*np.random.random((br.IOcandles['in'][i], lf.encodeSize)) - 1 #in
+        syn1 = 2*np.random.random((lf.encodeSize,br.IOcandles['out'][i])) - 1 #out
         output = np.array(br.learnArrayOut)
         print(np.array(br.learnArrayIn))
         print(output)
@@ -72,7 +72,7 @@ for i in f.candles:
                 for j in range(len(br.learnArrayIn)):
                     br.learnArrayIn.pop()# input ANN array cleaning
                     br.learnArrayOut.pop()# output ANN array cleaning
-                startpos = br.createLearnArray(br.IOcandles['in'][i] * 4, br.IOcandles['out'][i] * 4, f.CurFileData, startpos, 3)
+                startpos = br.createLearnArray(br.IOcandles['in'][i] * lf.encodeSize, br.IOcandles['out'][i] * lf.encodeSize, f.CurFileData, startpos, 3)
                 if(startpos == -1): break #get it out
                 for learncycle in range(learnCount[i]):
                     if (len(br.learnArrayIn)>0):
