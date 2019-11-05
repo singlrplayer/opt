@@ -102,7 +102,7 @@ class blurRules:
     def getvalsFromLine(self, s):
         tmp = s.split('], [')
         tmpCandle = '' #candle string temporary (shadow,body,shadow)
-        tmpArr = [[],[]]
+        tmpArr = [[],[],[],[]]
         for i in range(len(tmp)):
             tmpCandle = tmp[i].strip('\'')
             tmpCandle = tmpCandle.strip('[')

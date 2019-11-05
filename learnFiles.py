@@ -10,7 +10,7 @@ class learnFiles:
     candle = [0.0, 0.0, 0.0] #тени и тело свечи. пригодится при заблуривании
     roundVal = 4 #костыль для округления до нужного количества знаков после запятой. надо разобраться в чем дело
     inputLine = [] #то, что мы будем подавать на вход по завершению обучения. размерность должна совпадать с self.learnLine['in']
-    encodeSize = 2 #количество символов для кодирования выходного сигнала.см def encodeVal
+    encodeSize = 4 #количество символов для кодирования выходного сигнала.см def encodeVal
     
 
     def doLearnlogic(self,files,rules,i,learnfile,inputFile):
@@ -85,26 +85,22 @@ class learnFiles:
 
     def encodeVal(self, v): #кодируем в двоичной системе значения до +/-7 включительно, первое место под знак
         val = (int(v) - 10) # [-10..10] -> [0..20] ==> 0 -> 10, step: 2
-        if (val < -4): return [1,1] #big down
-        if (val < 0): return [1,0] #small down
-        if (val < 5): return [0,0] # zero and small up
-        return [0,1] #big up
-        """if (val == 0): return [0,0,0,0]
+        if (val == 0): return [0,0,0,0]
         if (val > 0):
-            if (val == 1): return([0,0,0,1])
-            if (val == 2): return([0,0,1,0])
-            if (val == 3): return([0,0,1,1])
-            if (val == 4): return([0,1,0,0])
-            if (val == 5): return([0,1,0,1])
-            if (val == 6): return([0,1,1,0])
-            return([0,1,1,1])
+            if (val == 1): return([0,0,1,0])
+            if (val == 2): return([0,1,0,0])
+            if (val == 3): return([0,1,1,0])
+            if (val == 4): return([1,0,0,0])
+            if (val == 5): return([1,0,1,0])
+            if (val == 6): return([1,1,0,0])
+            return([1,1,1,0]) #tne math sign is last symbol
         else :  #if (val > 0):
-            if (val == -1): return([1,0,0,1])
-            if (val == -2): return([1,0,1,0])
-            if (val == -3): return([1,0,1,1])
-            if (val == -4): return([1,1,0,0])
-            if (val == -5): return([1,1,0,1])
-            if (val == -6): return([1,1,1,0])
-            return([1,1,1,1])"""
+            if (val == -1): return([0,0,1,1])
+            if (val == -2): return([0,1,0,1])
+            if (val == -3): return([0,1,1,1])
+            if (val == -4): return([1,0,0,1])
+            if (val == -5): return([1,0,1,1])
+            if (val == -6): return([1,1,0,1])
+            return([1,1,1,1])
         
 
