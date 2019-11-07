@@ -26,7 +26,7 @@ br = blurRules() #правила сглаживания
 lf = learnFiles() #логика обучающих файлов
 f.learnInit(br, 'config.txt', 'AUDUSD') #инициализация обучающих файлов по конкретной валютной паре
 mytime = {}#время старта обучения по каждой модели свеч
-learnCount = {'minFile':5,'min5File':5,'min15File':10,'min30File':10,'hourFile':10,'hour4File':10,'dayFile':10,'weekFile':50,'monthFile':50} #количество циклов обучения в пачке данных lines для каждой свечки 
+learnCount = {'minFile':5,'min5File':5,'min15File':10,'min30File':10,'hourFile':10,'hour4File':10,'dayFile':10,'weekFile':10,'monthFile':20} #количество циклов обучения в пачке данных lines для каждой свечки 
 
 print("start creating rows and learning")
 ######## надо будет это форкать по всем типам свечей
