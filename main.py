@@ -50,6 +50,8 @@ for i in f.candles:
         f.LearnLogF.write(str(i) + '\n')
         syn0 = 2*np.random.random((br.IOcandles['in'][i], 4)) - 1 #in
         syn1 = 2*np.random.random((4,br.IOcandles['out'][i])) - 1 #out
+        print(syn0)
+        print(syn1)        
         output = np.array(br.learnArrayOut)
         print(np.array(br.learnArrayIn))
         print(output)
