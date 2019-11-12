@@ -48,14 +48,14 @@ for i in f.candles:
         startpos = 0
         startpos = br.createLearnArray(br.IOcandles['in'][i] * 4, br.IOcandles['out'][i] * 4, f.CurFileData, startpos, 3)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
         f.LearnLogF.write(str(i) + '\n')
-        syn0 = 2*np.random.random((br.IOcandles['in'][i], 4)) - 1 #in
-        syn1 = 2*np.random.random((4,br.IOcandles['out'][i])) - 1 #out
+        syn0 = 2*np.random.random((br.IOcandles['in'][i], lf.encodeSize * br.IOcandles['in'][i])) - 1 #in
+        syn1 = 2*np.random.random((lf.encodeSize * br.IOcandles['in'][i], br.IOcandles['out'][i])) - 1 #out
         print(syn0)
         print(syn1)        
         output = np.array(br.learnArrayOut)
         print(np.array(br.learnArrayIn))
         print(output)
-        for mainLearnCycle in range(learnCount[i] * 1000): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
+        for mainLearnCycle in range(learnCount[i] * 500): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
             for learncycle in range(learnCount[i]):
                 if (len(br.learnArrayIn)>0):
                     layer0 = np.array(br.learnArrayIn)
@@ -107,7 +107,6 @@ for i in f.candles:
         print("---------------END---------------")
         print("---learning time %s seconds ---" % (time.time() - mytime[i]))
         f_predict.write(str(i) + '\n')
-        #f_predict.write(str(layer2))
         np.savetxt(f_predict,layer2)
         f_predict.write("---learning time in seconds ---" + str(time.time() - mytime[i]) + '\n')
         f_predict.write('---------------------------------\n')
