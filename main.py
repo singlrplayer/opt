@@ -55,7 +55,7 @@ for i in f.candles:
         output = np.array(br.learnArrayOut)
         print(np.array(br.learnArrayIn))
         print(output)
-        for mainLearnCycle in range(learnCount[i] * 500): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
+        for mainLearnCycle in range(learnCount[i] * 200): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
             for learncycle in range(learnCount[i]):
                 if (len(br.learnArrayIn)>0):
                     layer0 = np.array(br.learnArrayIn)
