@@ -87,20 +87,20 @@ class learnFiles:
         val = (int(v) - 10) # [-10..10] -> [0..20] ==> 0 -> 10, step: 2
         if (val == 0): return [0,0,0,0]
         if (val > 0):
-            if (val == 1): return([0,0,0,1])
-            if (val == 2): return([0,0,1,0])
-            if (val == 3): return([0,0,1,1])
-            if (val == 4): return([0,1,0,0])
-            if (val == 5): return([0,1,0,1])
-            if (val == 6): return([0,1,1,0])
-            return([0,1,1,1])
+            if (val == 1): return([-1,0,0,1])
+            if (val == 2): return([-1,0,1,0])
+            if (val == 3): return([-1,0,1,1])
+            if (val == 4): return([-1,1,0,0])
+            if (val == 5): return([-1,1,0,1])
+            if (val == 6): return([-1,1,1,0])
+            return([-1,1,1,1])
         else :  #if (val > 0):
-            if (val == -1): return([1,0,0,1])
-            if (val == -2): return([1,0,1,0])
-            if (val == -3): return([1,0,1,1])
-            if (val == -4): return([1,1,0,0])
-            if (val == -5): return([1,1,0,1])
-            if (val == -6): return([1,1,1,0])
-            return([1,1,1,1])
+            if (val == -1): return([2,0,0,1])
+            if (val == -2): return([2,0,1,0])
+            if (val == -3): return([2,0,1,1])
+            if (val == -4): return([2,1,0,0])
+            if (val == -5): return([2,1,0,1])
+            if (val == -6): return([2,1,1,0])
+            return([2,1,1,1])
         
 
