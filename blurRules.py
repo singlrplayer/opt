@@ -84,6 +84,8 @@ class blurRules:
                 print("blurRules.py (createInputArray): wrong string format " + s)
             
     def createLearnArray(self, sizeIn, sizeOut, data, startPos, count):
+        self.learnArrayIn = []
+        self.learnArrayOut = []
         if (startPos == -1): return -1 # we got end of file (костыль. TODO: разобраться, и сделать всё по-людски)
         if(startPos == len(data)):return -1# end of data
         s = data[startPos]

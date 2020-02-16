@@ -48,10 +48,10 @@ for i in f.candles:
         startpos = 0
         startpos = br.createLearnArray(br.IOcandles['in'][i] * 4, br.IOcandles['out'][i] * 4, f.CurFileData, startpos, 3)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
         f.LearnLogF.write(str(i) + '\n')
-        syn0 = 2*np.random.random((br.IOcandles['in'][i], lf.encodeSize * br.IOcandles['in'][i])) - 1 #in
+        syn0 = 2*np.random.random((br.IOcandles['in'][i]*3, lf.encodeSize * br.IOcandles['in'][i])) - 1 #in
         syn1 = 2*np.random.random((lf.encodeSize * br.IOcandles['in'][i], br.IOcandles['out'][i])) - 1 #out
-        print(syn0)
-        print(syn1)        
+        #print(syn0)
+        #print(syn1)        
         output = np.array(br.learnArrayOut)
         print(np.array(br.learnArrayIn))
         print(output)
@@ -71,9 +71,7 @@ for i in f.candles:
                     syn0 += layer0.T.dot(layer1_delta)
             #######
             while (startpos != -1): #этот кусок необходим, если в обучающем файле больше строк, нежели 1. обучение проходит пачками на тех же синапсах. ВАЖНО: шейпы синапсов зависят от linesCount[i]
-                for j in range(len(br.learnArrayIn)):
-                    br.learnArrayIn.pop()# input ANN array cleaning
-                    br.learnArrayOut.pop()# output ANN array cleaning
+
                 startpos = br.createLearnArray(br.IOcandles['in'][i] * 4, br.IOcandles['out'][i] * 4, f.CurFileData, startpos, 3)
                 if(startpos == -1): break #get it out
                 for learncycle in range(learnCount[i]):

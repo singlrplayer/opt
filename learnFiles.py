@@ -16,36 +16,38 @@ class learnFiles:
     def doLearnlogic(self,files,rules,i,learnfile,inputFile):
         #for i in files.candles: #TODO: форкать это
             self.success[i] = True
-            for k in range(len(self.learnLine['in'])): self.learnLine['in'].pop()
-            for k in range(len(self.learnLine['out'])): self.learnLine['out'].pop()
-            for k in range(len(self.inputLine)): self.inputLine.pop()
+            self.cleanArrs()
             if(i in rules.candleVal): #if we got rules for current candle type
+                #try: #первую пачку обучающего ряда читаем отдельно (надо будет сделать это все красивее)
                     tmp = [next(files) for x in range(rules.IOcandles['in'][i] + rules.IOcandles['out'][i])]#читаем сразу и вход, и выход
                     for j in range(rules.IOcandles['in'][i]): #записываем вход на вход
-                        y = getCandleFrom(tmp[j]) #get one candle
-                        self.learnLine['in'].append(self.blurCandle(y,rules, i, True))
-                        if(j >= rules.IOcandles['out'][i]):
-                            self.inputLine.append(self.blurCandle(y,rules, i, True))
+                        y = getCandleFrom(tmp[j])
+                        tmp1 = self.blurCandle(y,rules, i, True) #encode IN
+                        self.appVal(self.learnLine['in'], tmp1)
+                        if((j - rules.IOcandles['out'][i]) >= 0): #ВАЖНО: решение исключительно для 1шт свечи на выходе 
+                            self.appVal(self.inputLine, tmp1)
                     for j in range(rules.IOcandles['out'][i]): #записываем выход в выход
-                        y = getCandleFrom(tmp[j]) #get one candle
-                        self.learnLine['out'].append(self.blurCandle(y,rules, i, True))
-                        self.inputLine.append(self.blurCandle(y,rules, i, True))
-                    learnfile.write(str(self.learnLine['in']) + str(self.learnLine['out']))
-                    learnfile.write('\n')
-                    inputFile.write(str(self.inputLine))
-                    inputFile.write('\n')
-                    for line in files: #теперь читаем остаток файла, и реализуем FIFO
-                        self.learnLine['in'].pop(0)
-                        self.learnLine['in'].append(self.learnLine['out'][0])
-                        y = getCandleFrom(line)
+                        y = getCandleFrom(tmp[j + rules.IOcandles['in'][i]])
+                        tmp1 = self.blurCandle(y,rules, i, False) #encode OUT
+                        tmp2 = self.blurCandle(y,rules, i, True) #encode IN //проблема этого подхода в том, что будет жопа, если мы захотим предсказывать сразу несколько свечей (т.е. больше одной). в это случае следует возвратиться к мастеру(либо другим более ранним веткам)
+                        self.appVal(self.inputLine, tmp2)
+                        self.learnLine['out'].append(tmp1)
+                    learnfile.write(str(self.learnLine['in']) + str(self.learnLine['out']) + '\n')
+                    inputFile.write(str(self.inputLine) + '\n')
+                #except Exception:
+                    #print("слишком короткий исходный файл для свечей " + i)
+                    for line in files: #теперь читаем остаток файла
+                        self.delFirst(self.learnLine['in'])
+                        self.updInFromInline()
+                        y = getCandleFrom(line) #берем следующую свечу, и кидаем её заблуренную на віход обучающей чепочки, и на вход того, что скормим по завершению обучения
+                        tmp1 = self.blurCandle(y,rules, i, False) #encode OUT
+                        #self.appVal(self.learnLine['out'], tmp1)
                         self.learnLine['out'].pop(0)
-                        self.learnLine['out'].append(self.blurCandle(y,rules, i, True))
-                        self.inputLine.pop(0)
-                        self.inputLine.append(self.blurCandle(y,rules, i, True))
-                        learnfile.write(str(self.learnLine['in']) + str(self.learnLine['out']))
-                        inputFile.write(str(self.inputLine))
-                        inputFile.write('\n')
-                        learnfile.write('\n')
+                        self.learnLine['out'].append(tmp1)
+                        tmp2 = self.blurCandle(y,rules, i, True) #encode IN
+                        self.appVal(self.inputLine, tmp2)
+                        learnfile.write(str(self.learnLine['in']) + str(self.learnLine['out']) + '\n')
+                        inputFile.write(str(self.inputLine) + '\n')
             else:
                 print("нет правил для свечей типа " +i)
                 self.success[i] = False
@@ -56,10 +58,12 @@ class learnFiles:
         s = []
         self.getCandleVal(y,rules, canletype) #
         if (mode): #хуевый костыль для необходимости (либо ее отсутсвия перевода в двоичную систему)
+            s.append(self.encodeVal(self.doBlur(self.candle[0], rules.shadowRules[canletype])))
             s.append(self.encodeVal(self.doBlur(self.candle[1], rules.bodyRules[canletype])))
-        else: 
-            s.append(self.doBlur(self.candle[1], rules.bodyRules[canletype]))
-        return s
+            s.append(self.encodeVal(self.doBlur(self.candle[2], rules.shadowRules[canletype])))
+        else: #иначе нам надо закодировать ВЫХОД (троичная система в двоичном формате на данный момент) 
+            s = self.encodeOutVal(self.doBlur(self.candle[1], rules.bodyRules[canletype]))
+        return s #format: [upahadow, body, downshadow]
 
     def getCandleVal(self,y,rules, canletype):
         self.candle[1] = round((float(y.closeVal) - float(y.openVal)), self.roundVal)
@@ -72,6 +76,7 @@ class learnFiles:
 
     def doBlur(self, v, rule):
         val = round(v, self.roundVal)
+        #print(val)
         for i in rule:
             if (len(rule[i]) > 1): #если у нас предел из двух значений
                 if (val >= rule[i][0] and val <= rule[i][1]):
@@ -80,27 +85,55 @@ class learnFiles:
                 if (val > 0 and rule[i][0] > 0): return i #if bull candle or we have shadow
                 if (val > 0 and rule[i][0] == 0): return i #костыль для детекта самой мелкой тени минутки. TODO: переделать
                 if (val < 0 and rule[i][0] < 0): return i
-        print("значение не смогло закодироваться " + str(val))
+        print("learnFiles (doBlur): значение не смогло закодироваться " + str(val))
         print (rule)
 
     def encodeVal(self, v): #кодируем в двоичной системе значения до +/-7 включительно, первое место под знак
-        val = (int(v) - 10) # [-10..10] -> [0..20] ==> 0 -> 10, step: 2
+        val = (int(v) - 10) # [-10..10] -> [0..20] ==> 0 -> 10, step 2
         if (val == 0): return [0,0,0,0]
         if (val > 0):
-            if (val == 1): return([-1,0,0,1])
-            if (val == 2): return([-1,0,1,0])
-            if (val == 3): return([-1,0,1,1])
-            if (val == 4): return([-1,1,0,0])
-            if (val == 5): return([-1,1,0,1])
-            if (val == 6): return([-1,1,1,0])
-            return([-1,1,1,1])
+            if (val == 1): return([0,0,0,1])
+            if (val == 2): return([0,0,1,0])
+            if (val == 3): return([0,0,1,1])
+            if (val == 4): return([0,1,0,0])
+            if (val == 5): return([0,1,0,1])
+            if (val == 6): return([0,1,1,0])
+            return([0,1,1,1])
         else :  #if (val > 0):
-            if (val == -1): return([2,0,0,1])
-            if (val == -2): return([2,0,1,0])
-            if (val == -3): return([2,0,1,1])
-            if (val == -4): return([2,1,0,0])
-            if (val == -5): return([2,1,0,1])
-            if (val == -6): return([2,1,1,0])
-            return([2,1,1,1])
-        
+            if (val == -1): return([1,0,0,1])
+            if (val == -2): return([1,0,1,0])
+            if (val == -3): return([1,0,1,1])
+            if (val == -4): return([1,1,0,0])
+            if (val == -5): return([1,1,0,1])
+            if (val == -6): return([1,1,1,0])
+            return([1,1,1,1])
 
+    def encodeOutVal(self, v): #кодируем в троичной системе значения выхода (10, 00, 01)
+        val = (int(v) - 10) # 
+        if (val == 0): return [0,0,0,0]
+        if (val > 0): return [0,0,1,1]
+        return [1,1,0,0]
+
+    def cleanArrs(self):
+            for k in range(len(self.learnLine['in'])): self.learnLine['in'].pop()
+            for k in range(len(self.learnLine['out'])): self.learnLine['out'].pop()
+            for k in range(len(self.inputLine)): self.inputLine.pop()
+
+    def appVal(self, array, val):
+        for k in range(3): #upshadow, body,downshadow
+            array.append((val[k]))
+            """for k in range(self.encodeSize): #self.encodeSize == len(val[0])
+                array.append(str(val[0][k]) + ':' + str(val[1][k]) + ':' + str(val[2][k])) #val[0] -> upshadow, val[1] -> body, val[2] -> downshadow (binnary encoded)"""
+
+
+    def delFirst(self,array):
+        for k in range(3): 
+            array.pop(0)
+        """for k in range(self.encodeSize):
+            array.pop(0)"""
+
+    def updInFromInline(self):
+        for k in range(3):
+            self.learnLine['in'].append(self.inputLine.pop(0))
+        """for k in range(self.encodeSize):
+            self.learnLine['in'].append(self.inputLine.pop(0))"""
