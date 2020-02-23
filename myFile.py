@@ -7,6 +7,8 @@ class myFile:
     Qfiles = {} #переменные файлов со свечками
     InputFilePath = {} # ANN input 4 predict
     InputFiles = {} #ANN input 4 predict
+    SynFilePatn = {} #пути файлов с синапсами
+    SynFiles = {} #переменные файлов с синапсами
     LearnfilePath = {} #файлы с обучающими цепочками
     Learniles = {} #переменные файлов с обучающими цепочками
     CurFileData = {} #данные текущего файла (попробуем читать всё в память)
@@ -16,12 +18,13 @@ class myFile:
     TmpFiles = {} # переменные этих временных файлов
     candles = ['minFile','min5File','min15File','min30File','hourFile','hour4File','dayFile','weekFile','monthFile'] #названия свечек. добавляется к названию файла
     candles_enc = {'minFile':1,'min5File':5,'min15File':15,'min30File':30,'hourFile':60,'hour4File':240,'dayFile':1440,'weekFile':10080,'monthFile':43200} #названия файлов свечей, получаемых из мт4
-    LearnLogF = '' #логи обучения
+    LearnLogF = open("log", "w")#логи обучения
 
 
     def __init__(self, currency = 'USDJPY'):
         path = os.getcwd()
         os.chdir(currency + '_MT4')
+        self.source['pretext'] = currency
         for i in self.candles:
             self.QfilePath[i] = currency + str(self.candles_enc[i]) + ".txt"
             self.TmpFilePath[i] = self.fileCreate(currency + '_' + i + ".txt")
@@ -45,6 +48,7 @@ class myFile:
         #path = os.getcwd()
         #print (path)
         try:
+            self.LearnLogF.close()
             self.LearnLogF = open(currency + '_learn_log','w')
         except Exception:
             print("не удалось создать файл логов обучения")
@@ -54,7 +58,8 @@ class myFile:
             z = z[0:len(z)-1] #некрасивое удаление знака конца строки. переделать
             self.source['candlepath'] = self.source['pretext'] = str(z)
             #self.getSourceCandles(self.source['candlepath'])
-            self.dircreate(self.source['candlepath'] + 'learning', 'candlepath')
+            self.dircreate(self.source['candlepath'] + 'learning', 'candlepath') #сюда складываем всё, что нужно для обучения и прогнозирования
+            #self.dircreate(self.source['candlepath'] + 'learning' + 'synapse', 'candlepath') #сюда складываем всё, что нужно для обучения и прогнозирования
             self.makeLearnFiles(self.source['candlepath'])
             itertools.islice(f,1)
             for line in f:
@@ -69,7 +74,8 @@ class myFile:
         os.chdir(currency)
         for i in self.candles:
             self.LearnfilePath[i] = self.fileCreate(self.source['pretext'] + "_learn_" + i + ".txt")
-            self.InputFilePath[i] = self.fileCreate(currency + '_input_' + i + ".txt")
+            self.InputFilePath[i] = self.fileCreate(self.source['pretext'] + '_input_' + i + ".txt")
+            self.SynFilePatn[i] = self.source['pretext'] + '_syn_' + i + ".npz"
             try:
                 self.Learniles[i] = open(self.LearnfilePath[i], 'a+')
                 self.InputFiles[i] = open(self.InputFilePath[i], 'a+')
@@ -84,10 +90,8 @@ class myFile:
             if(i in self.InputFiles): self.InputFiles[i].close()
             #if(i in self.StatFiles): self.StatFiles[i].close()
             if(i in self.Learniles): self.Learniles[i].close()
-            #self.QfilePath[i] = ''
-            #self.LogfilePath[i] = ''
-        #self.source['f'].close()
         self.source['pretext'] = ''
+        self.LearnLogF.close()
 
     def dircreate(self, s,ind):
         path = os.getcwd()

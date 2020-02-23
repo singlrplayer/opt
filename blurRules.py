@@ -115,5 +115,10 @@ class blurRules:
                 tmpArr[j].append(float(tmp1[j]))
         return tmpArr
 
-        
-
+    def updInputArray(self, item):
+        for i in range(4): self.arrayIn[i].pop(0)
+        for i in range(4):
+                if(item[i] > float(0.5)): tmp = 1 #sing encoding
+                else: tmp = 0
+                self.arrayIn[i].append(tmp) 
+                
