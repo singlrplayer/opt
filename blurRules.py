@@ -75,7 +75,8 @@ class blurRules:
                 print("ошибка синтатксиса праввил свечей")
             i = i + 1
 
-    def createInputArray(self, sizeIn, data, count, Pos = -1):
+    def createInputArray(self, data):
+        self.arrayIn = [] #TODO: понять насколько такой медот обнуления гарантирует освобождение памяти
         s = data[-1]
         try:
                 s_in = s[2:len(s) - 1]
@@ -83,7 +84,7 @@ class blurRules:
         except Exception:
                 print("blurRules.py (createInputArray): wrong string format " + s)
             
-    def createLearnArray(self, sizeIn, sizeOut, data, startPos, count):
+    def createLearnArray(self, data, startPos):
         self.learnArrayIn = []
         self.learnArrayOut = []
         if (startPos == -1): return -1 # we got end of file (костыль. TODO: разобраться, и сделать всё по-людски)
