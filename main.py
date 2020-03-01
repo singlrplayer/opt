@@ -47,8 +47,7 @@ f_predict.write(str(time.ctime(time.time())) + '\n')
 f_predict.write(str(f.source['pretext']) + '\n')
 f_predict.close()
 print("get source:")
-for i in f.candles:
-    print(f.QfilePath[i])
+for i in f.candles: print(f.QfilePath[i])
 br = blurRules() #правила сглаживания
 lf = learnFiles() #логика обучающих файлов
 f.learnInit(br, 'config.txt', 'AUDUSD') #инициализация обучающих файлов по конкретной валютной паре
@@ -57,11 +56,11 @@ learnCount = {'minFile':5,'min5File':5,'min15File':10,'min30File':10,'hourFile':
 ANN = {} #ANN params
 
 print("start creating rows and learning")
+f_predict = open("redict.txt",'a')
 ######## надо будет это форкать по всем типам свечей
 for i in f.candles: 
     print (i)
     if(f.QfilePath[i] != ''): #если есть исходный файл нужной нам свечки
-        f_predict = open("redict.txt",'a')
         mytime[i] = time.time()
         f1 = candlecreate(f.Qfiles[i], f.TmpFiles[i], int(f.candles_enc[i])) #делаем свечки без пробелов в данных
         f.TmpFiles[i].seek(0)
@@ -127,5 +126,5 @@ for i in f.candles:
     else:
         f.TmpFilePath = f.QfilePath[i]
 ########
-
+f_predict.close()
 f.myShutdowm()
