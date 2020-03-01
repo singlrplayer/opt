@@ -93,26 +93,30 @@ class learnFiles:
         if (val == 0): return [0,0,0,0]
         if (val > 0):
             if (val == 1): return([0,0,0,1])
-            if (val == 2): return([0,0,1,0])
-            if (val == 3): return([0,0,1,1])
-            if (val == 4): return([0,1,0,0])
-            if (val == 5): return([0,1,0,1])
-            if (val == 6): return([0,1,1,0])
+            if (val == 2): return([0,0,1,1])
+            #if (val == 3): return([0,0,1,1])
+            #if (val == 4): return([0,1,0,0])
+            #if (val == 5): return([0,1,0,1])
+            #if (val == 6): return([0,1,1,0])
             return([0,1,1,1])
         else :  #if (val > 0):
-            if (val == -1): return([1,0,0,1])
-            if (val == -2): return([1,0,1,0])
-            if (val == -3): return([1,0,1,1])
-            if (val == -4): return([1,1,0,0])
-            if (val == -5): return([1,1,0,1])
-            if (val == -6): return([1,1,1,0])
-            return([1,1,1,1])
+            if (val == -1): return([1,0,0,0])
+            if (val == -2): return([1,1,0,0])
+            #if (val == -3): return([1,0,1,1])
+            #if (val == -4): return([1,1,0,0])
+            #if (val == -5): return([1,1,0,1])
+            #if (val == -6): return([1,1,1,0])
+            return([1,1,1,0])
 
     def encodeOutVal(self, v): #кодируем в троичной системе значения выхода (10, 00, 01)
         val = (int(v) - 10) # 
         if (val == 0): return [0,0,0,0]
-        if (val > 0): return [0,0,1,1]
-        return [1,1,0,0]
+        if (val > 0): 
+            if(val == 1): return [0,0,0,1]
+            return [0,0,1,1]
+        else: 
+            if (val == -1): return([1,0,0,0])
+            return [1,1,0,0]
 
     def cleanArrs(self):
             for k in range(len(self.learnLine['in'])): self.learnLine['in'].pop()
