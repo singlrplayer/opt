@@ -56,7 +56,7 @@ learnCount = {'minFile':5,'min5File':5,'min15File':10,'min30File':10,'hourFile':
 ANN = {} #ANN params
 
 print("start creating rows and learning")
-f_predict = open("redict.txt",'a')
+f_predict = open("predict.txt",'a')
 ######## надо будет это форкать по всем типам свечей
 for i in f.candles: 
     print (i)
