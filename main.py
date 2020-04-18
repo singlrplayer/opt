@@ -93,7 +93,7 @@ for i in f.candles:
         output = np.array(br.learnArrayOut)
         #print(np.array(br.learnArrayIn))
         #print(output)
-        for mainLearnCycle in range(learnCount[i] * 150): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
+        for mainLearnCycle in range(learnCount[i] * 1500): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
             for learncycle in range(learnCount[i]):
                 if (len(br.learnArrayIn)>0):
                     ANN = learn(br, ANN['syn0'], ANN['syn1'])
