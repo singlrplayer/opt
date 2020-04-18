@@ -56,13 +56,14 @@ class learnFiles:
     def blurCandle(self,y,rules, canletype, mode):
         #ipdb.set_trace()
         s = []
-        self.getCandleVal(y,rules, canletype) #
         if (mode): #хуевый костыль для необходимости (либо ее отсутсвия перевода в двоичную систему)
+            self.getCandleVal(y,rules, canletype) #
             s.append(self.encodeVal(self.doBlur(self.candle[0], rules.shadowRules[canletype])))
             s.append(self.encodeVal(self.doBlur(self.candle[1], rules.bodyRules[canletype])))
             s.append(self.encodeVal(self.doBlur(self.candle[2], rules.shadowRules[canletype])))
-        else: #иначе нам надо закодировать ВЫХОД (троичная система в двоичном формате на данный момент) 
-            s = self.encodeOutVal(self.doBlur(self.candle[1], rules.bodyRules[canletype]))
+        else: #иначе нам надо закодировать ВЫХОД () 
+            #s = self.encodeOutVal(self.doBlur(self.candle[1], rules.bodyRules[canletype]))
+            s = self.encodeOutVal(self.doBlur((round((float(y.hightVal) - float(y.openVal)),self.roundVal)), rules.bodyRules[canletype]))
         return s #format: [upahadow, body, downshadow]
 
     def getCandleVal(self,y,rules, canletype):
