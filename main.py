@@ -89,7 +89,7 @@ for i in f.candles:
         startpos = br.createLearnArray( f.CurFileData, startpos)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
         f.LearnLogF.write(str(i) + '\n')
         output = np.array(br.learnArrayOut)
-        for mainLearnCycle in range(learnCount[i] * 1500): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
+        for mainLearnCycle in range(learnCount[i] * 500): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
             for learncycle in range(learnCount[i]):
                 if (len(br.learnArrayIn)>0):
                     ANN = learn(br, ANN['syn0'], ANN['syn1'])
