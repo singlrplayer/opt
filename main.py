@@ -42,6 +42,7 @@ def getpredict(br, syn0, syn1,s1 = '',s2 = ''):
 ###########
 
 f = myFile('AUDUSD') #инициация файлов экспорта мт4
+f_predict = open("predict.txt",'a')
 f_predict.write(str(time.ctime(time.time())) + '\n')
 f_predict.write(str(f.source['pretext']) + '\n')
 f_predict.close()
