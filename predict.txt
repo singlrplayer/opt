@@ -47,3 +47,13 @@ predict:
 
 learning time: 14 min
 ---------------------------------
+Sat Apr 25 12:53:06 2020
+AUDUSD
+Sat Apr 25 12:53:51 2020
+AUDUSD
+Sat Apr 25 12:54:50 2020
+AUDUSD
+Sat Apr 25 12:56:51 2020
+AUDUSD
+Sat Apr 25 12:58:50 2020
+AUDUSD

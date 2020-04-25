@@ -147,8 +147,8 @@ class myFile:
                 candlefiles.myShutdowm()
         return self
 
-    def getData(self, file):
-        self.CurFileData = file.readlines()
+    def getData(self, f):
+        self.CurFileData = f.readlines()
                 
         
 

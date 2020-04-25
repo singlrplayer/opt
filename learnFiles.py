@@ -70,10 +70,12 @@ class learnFiles:
         self.candle[1] = round((float(y.closeVal) - float(y.openVal)), self.roundVal)
         if(self.candle[1] > 0): #if bull candle
             self.candle[0] = round((float(y.hightVal) - float(y.closeVal)), self.roundVal)
-            self.candle[2] = round((float(y.openVal) - float(y.lowVal)),self.roundVal)
+            #self.candle[2] = round((float(y.openVal) - float(y.lowVal)),self.roundVal)
+            self.candle[2] = round((float(y.lowVal) - float(y.openVal)),self.roundVal) # попробуем так. это же, все-таки, нижняя тень
         else: #if bear candle
             self.candle[0] = round((float(y.hightVal) - float(y.openVal)),self.roundVal)
-            self.candle[2] = round((float(y.closeVal) - float(y.lowVal)),self.roundVal)
+            #self.candle[2] = round((float(y.closeVal) - float(y.lowVal)),self.roundVal)
+            self.candle[2] = round((float(y.lowVal) - float(y.closeVal)),self.roundVal) # аналогияно
 
     def doBlur(self, v, rule):
         val = round(v, self.roundVal)

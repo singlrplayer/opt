@@ -72,7 +72,7 @@ class blurRules:
                 else:
                     mydict[key].append(float(tmp[i][1:len(tmp[i]) - 1]))
             except Exception:
-                print("ошибка синтатксиса праввил свечей")
+                print("BlurRules(parceRules): ошибка синтатксиса праввил свечей -> " + str(tmp[i]))
             i = i + 1
 
     def createInputArray(self, data):

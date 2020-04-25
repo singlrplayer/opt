@@ -6,6 +6,8 @@ import time
 
 import numpy as np
 
+import random
+
 ############ ANN turing machine part ;)
 def nonlin(x,deriv=False):
     if(deriv==True):
@@ -86,7 +88,8 @@ for i in f.candles:
         ######---------start learn
         ANN['err'] = maxErr = 1 #максимальная ошибка в ходе обучения за данный цикл
         startpos = 0
-        startpos = br.createLearnArray( f.CurFileData, startpos)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
+        random.shuffle(f.CurFileData)
+        startpos = br.createLearnArray(f.CurFileData, startpos)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
         f.LearnLogF.write(str(i) + '\n')
         output = np.array(br.learnArrayOut)
         for mainLearnCycle in range(learnCount[i] * 500): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
@@ -108,6 +111,7 @@ for i in f.candles:
                             print(ANN['layer2'])
                             print(br.learnArrayOut)
             startpos = 0
+            random.shuffle(f.CurFileData) #каждый раз подаём данные для обучения в рандомном порядке. это увеличит общее время, но улучшит качество обучения
         np.savez(f.SynFilePatn[i], syn0 = ANN['syn0'], syn1 = ANN['syn1']) #сохраняем синапсы в файл с синапсами
         ######----------end learn
         f.InputFiles[i].seek(0)
