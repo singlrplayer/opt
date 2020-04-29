@@ -123,8 +123,12 @@ for i in f.candles:
         f_predict.write("\nlearning time: " + str(int((time.time() - mytime[i]) / 60) + 1) + ' min\n---------------------------------\n')
         br.updInputArray(predict) #
         predict = getpredict(br, ANN['syn0'], ANN['syn1'], "-------------next one-----------", "---------------END---------------\n---learning time "  + str(int((time.time() - mytime[i]) / 60) + 1) +  " min ---")
+        del f1
     else:
         f.TmpFilePath = f.QfilePath[i]
 ########
+del br
+del lf
 f_predict.close()
 f.myShutdowm()
+del f
