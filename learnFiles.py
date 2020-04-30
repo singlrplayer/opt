@@ -63,7 +63,7 @@ class learnFiles:
             s.append(self.encodeVal(self.doBlur(self.candle[2], rules.shadowRules[canletype])))
         else: #иначе нам надо закодировать ВЫХОД () 
             #s = self.encodeOutVal(self.doBlur(self.candle[1], rules.bodyRules[canletype]))
-            s = self.encodeVal(self.doBlur((round((float(y.hightVal) - float(y.openVal)),self.roundVal)), rules.bodyRules[canletype]))
+            s = self.encodeVal(self.doBlur((round((float(y.openVal) - float(y.lowVal)),self.roundVal)), rules.bodyRules[canletype]))
         return s #format: [upahadow, body, downshadow]
 
     def getCandleVal(self,y,rules, canletype):
