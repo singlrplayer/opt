@@ -60,4 +60,9 @@ def minsBetween(date1, time1, date2, time2):
     tmp = (datetime.datetime.strptime(str(date1) , "%Y.%m.%d") - datetime.datetime.strptime(str(date2) , "%Y.%m.%d")).seconds/60 + (datetime.datetime.strptime(str(time1) , "%H:%M") - datetime.datetime.strptime(str(time2) , "%H:%M")).seconds/60
     return int(tmp)
         
+def encodeDataTime(d, t):
+    return time.mktime(time.strptime(str((d) + ":" + str(t)) , "%Y.%m.%d:%H:%M")) #дата+время, выраженные в секундах
+
+def decodeDataTime(ts):
+    return str(time.ctime(ts)) #дата+время, выраженные в понятных символах :)
     

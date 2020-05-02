@@ -1,7 +1,7 @@
 from myFile import myFile
 from blurRules import blurRules
 from learnFiles import learnFiles
-from candlecreate import candlecreate
+from candlecreate import *
 import time
 
 import numpy as np
@@ -64,7 +64,8 @@ for i in f.candles:
     print (i)
     if(f.QfilePath[i] != ''): #если есть исходный файл нужной нам свечки
         mytime[i] = time.time()
-        f1 = candlecreate(f.Qfiles[i], f.TmpFiles[i], int(f.candles_enc[i])) #делаем свечки без пробелов в данных
+        #f1 = candlecreate(f.Qfiles[i], f.TmpFiles[i], int(f.candles_enc[i])) #делаем свечки без пробелов в данных
+        f1 = candlecreateASIS(f.Qfiles[i], f.TmpFiles[i], int(f.candles_enc[i])) #потом разберемся. пока стоит попробовать так
         f.TmpFiles[i].seek(0)
         lf.doLearnlogic(f.TmpFiles[i], br, i, f.Learniles[i], f.InputFiles[i])#делаем обучающие файлы
         f.Learniles[i].seek(0)
@@ -86,18 +87,17 @@ for i in f.candles:
             print("synapse file reading error. new synapses created")
         #f_predict.write(str(i) + '\n')
         ######---------start learn
-        ANN['err'] = maxErr = 1 #максимальная ошибка в ходе обучения за данный цикл
         startpos = 0
         random.shuffle(f.CurFileData)
         startpos = br.createLearnArray(f.CurFileData, startpos)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
         f.LearnLogF.write(str(i) + '\n')
         output = np.array(br.learnArrayOut)
         for mainLearnCycle in range(learnCount[i] * 500): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
+            ANN['err'] = maxErr = 0 #максимальная ошибка в ходе обучения за данный цикл
             for learncycle in range(learnCount[i]):
                 if (len(br.learnArrayIn)>0):
                     ANN = learn(br, ANN['syn0'], ANN['syn1'])
-                    if ((mainLearnCycle % 500 == 0) and (learncycle% 10) == 0):
-                        print ("ANN predict forex error:" + str(ANN['err']))
+                    if(maxErr < ANN['err']): maxErr = ANN['err']
             #######
             while (startpos != -1): #этот кусок необходим, если в обучающем файле больше строк, нежели 1. обучение проходит пачками на тех же синапсах. ВАЖНО: шейпы синапсов зависят от linesCount[i]
 
@@ -106,13 +106,16 @@ for i in f.candles:
                 for learncycle in range(learnCount[i]):
                     if (len(br.learnArrayIn)>0):
                         ANN = learn(br, ANN['syn0'], ANN['syn1'])
+                        if(maxErr < ANN['err']): maxErr = ANN['err']
                         if ((mainLearnCycle % 1000 == 0) and (startpos% 100 == 0) and (learncycle == 0)):
                             print("mainLearnCycle: " + str(mainLearnCycle) + ", position: " + str(startpos) + ", learncycle: " + str(learncycle) + " --> ANN predict forex error:" + str(ANN['err']))
                             print(ANN['layer2'])
                             print(br.learnArrayOut)
             startpos = 0
+            if(mainLearnCycle % 1000 == 0): print("maxErr: " + str(maxErr))
             random.shuffle(f.CurFileData) #каждый раз подаём данные для обучения в рандомном порядке. это увеличит общее время, но улучшит качество обучения
-        np.savez(f.SynFilePatn[i], syn0 = ANN['syn0'], syn1 = ANN['syn1']) #сохраняем синапсы в файл с синапсами
+        ANN['data'] = np.array([mytime[i], f1[0], f1[1], br.mode])
+        np.savez(f.SynFilePatn[i], syn0 = ANN['syn0'], syn1 = ANN['syn1'], data = ANN['data']) #сохраняем синапсы в файл с синапсами
         ######----------end learn
         f.InputFiles[i].seek(0)
         f.getData(f.InputFiles[i])        
