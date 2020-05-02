@@ -7,6 +7,7 @@ class blurRules:
     learnArrayIn = [] #среднекрасивое решение для входов обучающей матрицы  : upShadow, body, DownShadow
     learnArrayOut = [] #среднекрасивое решение для выходов обучающей матрицы : upShadow, body, DownShadow
     arrayIn = [] #то, что мы подадим на вход после завершения обучения
+    mode = 0 #тип постоения свечей
 
 
     def getCandleRuleFromString(self, s):
@@ -53,7 +54,14 @@ class blurRules:
                 print ("ошибка чтения конфига. не найдено число входных свечей для ANN в валютной паре (либо не отделено пробелом) " + candleType)
                 return 
         except Exception:
-            print ("ошибка чтения конфига. не найден тип свечей (либо не отделен пробелом)" + s)
+            try:
+                 tmp = s.split('=')
+                 self.mode = int(tmp[1])
+                 return
+            except Exception:
+                print("неверно задан тип постоения свечей: " +s);                
+                return
+            print ("ошибка чтения конфига. не найден тип свечей (либо не отделен пробелом): " + s)
             return
 
     def parceRules(self, mydict, rulesSTR):
