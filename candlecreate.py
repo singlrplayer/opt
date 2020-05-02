@@ -1,15 +1,16 @@
 import itertools
-from updMytime import updMytime, minsBetween
+from updMytime import *
 from myParsLine import getCandleFromSource
 #from myFile import myFile
 from candleValues import candleValues
 
 def candlecreate(filein, fileout,count):
+    dt = [] # тут будет жить первая и последняя свеча / ВАЖНО: последняя не попадает в файл обучения!!!!
     #files = myFile()
     #files.myInit()
     #files.Qfiles['minFile'].write(files.source['f'].readline()) #первую строку переписываем, но только в минутный файл. мне надо, чтобы его понимал форексовый терминал
     y = getCandleFromSource(filein.readline()) #вторую парсим чтоб задать стартовые значения (надо будет сделать это как-то изящнее)
-    #print (y)
+    dt.append(encodeDataTime(y.date, y.time))#первая свеча (та, что первой подаётся на вход) 
     val = updMytime('00:00','2001.01.01') #TODO: убрать нахер отсюда, и сделать нормально
     val.d = date = olddate = y.date; val.t = time = oldtime = y.time
     candle = candleValues()
@@ -17,7 +18,6 @@ def candlecreate(filein, fileout,count):
     y.rememberOldDatatime(y, val)
     y.rememberOldCandle(y)
     j = j_min = 0
-    #itertools.islice(file,1)
     for line in filein:
         y = getCandleFromSource(line)
         candle.updateMe(y,j_min, fileout, False) #update means file data update
@@ -62,7 +62,19 @@ def candlecreate(filein, fileout,count):
         olDcloseVal = closeVal
         oldtime = time
         olddate = date
+    dt.append(encodeDataTime(y.date, y.time)) #последняя (она же -- предсказуемая. на ней не учимся)
+    return dt
     #files.myShutdowm()
     #return files
     #print ("old " + str(j) + '\nnew ' + str(j_min))
 
+def candlecreateASIS(filein, fileout, count): #потом разберемся. пока пробуе так
+    dt = [] # тут будет жить первая и последняя свеча / ВАЖНО: последняя не попадает в файл обучения!!!!
+    y = getCandleFromSource(filein.readline()) #первую строку читаем отдельно, потому как надло запомнить первую свечу
+    dt.append(encodeDataTime(y.date, y.time))
+    for line in filein:
+        fileout.write(str(y.date) + ','+ str(y.time)+','+str(y.openVal)+','+str(y.hightVal)+','+str(y.lowVal)+','+str(y.closeVal)+'\n') #последовательность записи значений в файл важна!!!!!!!!!
+        y = getCandleFromSource(line)
+    fileout.seek(0) #дальше нам надо будет читать его с начала
+    dt.append(encodeDataTime(y.date, y.time))
+    return dt
