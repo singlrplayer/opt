@@ -23,8 +23,8 @@ def learn(br, syn0, syn1):
     layer2_delta = layer2_error*nonlin(layer2,deriv=True)
     layer1_error = layer2_delta.dot(syn1.T)
     layer1_delta = layer1_error * nonlin(layer1,deriv=True)
-    syn1 += layer1.T.dot(layer2_delta)
-    syn0 += layer0.T.dot(layer1_delta)
+    syn1 += 0.4 * layer1.T.dot(layer2_delta)
+    syn0 += 0.4 * layer0.T.dot(layer1_delta)
     output['syn0'] = syn0 #для продолжения обучения
     output['syn1'] = syn1 #для продолжения обучения
     output['layer2'] = layer2 #для понимания хода обучения
@@ -92,12 +92,14 @@ for i in f.candles:
         startpos = br.createLearnArray(f.CurFileData, startpos)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
         f.LearnLogF.write(str(i) + '\n')
         output = np.array(br.learnArrayOut)
-        for mainLearnCycle in range(100): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
-            ANN['err'] = maxErr = 0 #максимальная ошибка в ходе обучения за данный цикл
+        for mainLearnCycle in range(10000): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
+            ANN['err'] = maxErr = 0 #максимальная и прочая ошибка в ходе обучения за данный цикл
+            myerr = 0 #средняя ошибка TODO: сделать это изящнее
             #for learncycle in range(learnCount[i]):
             if (len(br.learnArrayIn) < 1):break
             ANN = learn(br, ANN['syn0'], ANN['syn1'])
             if(maxErr < ANN['err']): maxErr = ANN['err']
+            myerr = myerr + ANN['err']
             #######
             while (startpos != -1): #этот кусок необходим, если в обучающем файле больше строк, нежели 1. обучение проходит пачками на тех же синапсах. ВАЖНО: шейпы синапсов зависят от linesCount[i]
                 startpos = br.createLearnArray(f.CurFileData, startpos)
@@ -105,13 +107,14 @@ for i in f.candles:
                 #for learncycle in range(learnCount[i]):
                 if (len(br.learnArrayIn) < 1): break
                 ANN = learn(br, ANN['syn0'], ANN['syn1'])
+                myerr = myerr + ANN['err']
                 if(maxErr < ANN['err']): maxErr = ANN['err']
-                if ((mainLearnCycle % 1000 == 0) and (startpos% 100 == 0) and (learncycle == 0)):
-                            print("mainLearnCycle: " + str(mainLearnCycle) + ", position: " + str(startpos) + ", learncycle: " + str(learncycle) + " --> ANN predict forex error:" + str(ANN['err']))
+                if ((mainLearnCycle % 1000 == 0) and (startpos% 100 == 0)):
+                            print("mainLearnCycle: " + str(mainLearnCycle) + ", position: " + str(startpos) + " --> ANN predict forex error:" + str(ANN['err']))
                             print(ANN['layer2'])
                             print(br.learnArrayOut)
             startpos = 0
-            if(mainLearnCycle % 500 == 0): print("maxErr: " + str(maxErr))
+            if(mainLearnCycle % 1000 == 0): print("maxErr: " + str(maxErr) + " err:" + str(myerr/len(f.CurFileData)))
             random.shuffle(f.CurFileData) #каждый раз подаём данные для обучения в рандомном порядке. это увеличит общее время, но улучшит качество обучения
         ANN['data'] = np.array([mytime[i], f1[0], f1[1], br.mode])
         np.savez(f.SynFilePatn[i], syn0 = ANN['syn0'], syn1 = ANN['syn1'], data = ANN['data']) #сохраняем синапсы в файл с синапсами
