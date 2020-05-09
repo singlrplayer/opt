@@ -54,7 +54,7 @@ br = blurRules() #правила сглаживания
 lf = learnFiles() #логика обучающих файлов
 f.learnInit(br, 'config.txt', 'AUDUSD') #инициализация обучающих файлов по конкретной валютной паре
 mytime = {}#время старта обучения по каждой модели свеч
-learnCount = {'minFile':5,'min5File':5,'min15File':10,'min30File':10,'hourFile':10,'hour4File':10,'dayFile':10,'weekFile':10,'monthFile':10} #количество циклов обучения в пачке данных lines для каждой свечки 
+learnCount = {'minFile':5,'min5File':5,'min15File':3,'min30File':3,'hourFile':3,'hour4File':3,'dayFile':3,'weekFile':3,'monthFile':3} #количество циклов обучения в пачке данных lines для каждой свечки 
 ANN = {} #ANN params
 
 print("start creating rows and learning")
@@ -92,27 +92,26 @@ for i in f.candles:
         startpos = br.createLearnArray(f.CurFileData, startpos)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
         f.LearnLogF.write(str(i) + '\n')
         output = np.array(br.learnArrayOut)
-        for mainLearnCycle in range(learnCount[i] * 500): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
+        for mainLearnCycle in range(100): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
             ANN['err'] = maxErr = 0 #максимальная ошибка в ходе обучения за данный цикл
-            for learncycle in range(learnCount[i]):
-                if (len(br.learnArrayIn)>0):
-                    ANN = learn(br, ANN['syn0'], ANN['syn1'])
-                    if(maxErr < ANN['err']): maxErr = ANN['err']
+            #for learncycle in range(learnCount[i]):
+            if (len(br.learnArrayIn) < 1):break
+            ANN = learn(br, ANN['syn0'], ANN['syn1'])
+            if(maxErr < ANN['err']): maxErr = ANN['err']
             #######
             while (startpos != -1): #этот кусок необходим, если в обучающем файле больше строк, нежели 1. обучение проходит пачками на тех же синапсах. ВАЖНО: шейпы синапсов зависят от linesCount[i]
-
                 startpos = br.createLearnArray(f.CurFileData, startpos)
                 if(startpos == -1): break #get it out
-                for learncycle in range(learnCount[i]):
-                    if (len(br.learnArrayIn)>0):
-                        ANN = learn(br, ANN['syn0'], ANN['syn1'])
-                        if(maxErr < ANN['err']): maxErr = ANN['err']
-                        if ((mainLearnCycle % 1000 == 0) and (startpos% 100 == 0) and (learncycle == 0)):
+                #for learncycle in range(learnCount[i]):
+                if (len(br.learnArrayIn) < 1): break
+                ANN = learn(br, ANN['syn0'], ANN['syn1'])
+                if(maxErr < ANN['err']): maxErr = ANN['err']
+                if ((mainLearnCycle % 1000 == 0) and (startpos% 100 == 0) and (learncycle == 0)):
                             print("mainLearnCycle: " + str(mainLearnCycle) + ", position: " + str(startpos) + ", learncycle: " + str(learncycle) + " --> ANN predict forex error:" + str(ANN['err']))
                             print(ANN['layer2'])
                             print(br.learnArrayOut)
             startpos = 0
-            if(mainLearnCycle % 1000 == 0): print("maxErr: " + str(maxErr))
+            if(mainLearnCycle % 500 == 0): print("maxErr: " + str(maxErr))
             random.shuffle(f.CurFileData) #каждый раз подаём данные для обучения в рандомном порядке. это увеличит общее время, но улучшит качество обучения
         ANN['data'] = np.array([mytime[i], f1[0], f1[1], br.mode])
         np.savez(f.SynFilePatn[i], syn0 = ANN['syn0'], syn1 = ANN['syn1'], data = ANN['data']) #сохраняем синапсы в файл с синапсами
