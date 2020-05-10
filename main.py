@@ -114,7 +114,9 @@ for i in f.candles:
                             print(ANN['layer2'])
                             print(br.learnArrayOut)"""
             startpos = 0
-            if(mainLearnCycle % 1000 == 0): print("maxErr: " + str(maxErr) + " err:" + str(myerr/len(f.CurFileData)))
+            if(mainLearnCycle % 1000 == 0): 
+                print("maxErr: " + str(maxErr) + " err:" + str(myerr/len(f.CurFileData)))
+                f_predict.write(str(maxErr) + " err:" + str(myerr/len(f.CurFileData) + "\n")
             random.shuffle(f.CurFileData) #каждый раз подаём данные для обучения в рандомном порядке. это увеличит общее время, но улучшит качество обучения
         ANN['data'] = np.array([mytime[i], f1[0], f1[1], br.mode])
         np.savez(f.SynFilePatn[i], syn0 = ANN['syn0'], syn1 = ANN['syn1'], data = ANN['data']) #сохраняем синапсы в файл с синапсами
