@@ -92,7 +92,7 @@ for i in f.candles:
         startpos = br.createLearnArray(f.CurFileData, startpos)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
         f.LearnLogF.write(str(i) + '\n')
         output = np.array(br.learnArrayOut)
-        for mainLearnCycle in range(5000): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
+        for mainLearnCycle in range(20000): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
             ANN['err'] = maxErr = 0 #максимальная и прочая ошибка в ходе обучения за данный цикл
             myerr = 0 #средняя ошибка TODO: сделать это изящнее
             #for learncycle in range(learnCount[i]):
