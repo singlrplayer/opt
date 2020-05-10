@@ -63,7 +63,7 @@ class learnFiles:
             s.append(self.encodeVal(self.doBlur(self.candle[2], rules.shadowRules[canletype])))
         else: #иначе нам надо закодировать ВЫХОД () 
             #s = self.encodeOutVal(self.doBlur(self.candle[1], rules.bodyRules[canletype]))
-            s = self.encodeVal(self.doBlur((round((float(y.hightVal) - float(y.openVal)),self.roundVal)), rules.bodyRules[canletype]))
+            s = self.encodeVal(self.doBlur((round((float(y.closeVal) - float(y.openVal)),self.roundVal)), rules.bodyRules[canletype]))
         return s #format: [upahadow, body, downshadow]
 
     def getCandleVal(self,y,rules, canletype):
@@ -111,7 +111,7 @@ class learnFiles:
             #if (val == -6): return([1,1,1,0])
             return([1,1,1,0])
 
-    def encodeOutVal(self, v): #кодируем в троичной системе значения выхода (10, 00, 01)
+    """def encodeOutVal(self, v): #кодируем в троичной системе значения выхода (10, 00, 01)
         val = (int(v) - 10) # 
         if (val == 0): return [0,0,0,0]
         if (val > 0): 
@@ -119,7 +119,7 @@ class learnFiles:
             return [0,0,1,1]
         else: 
             if (val == -1): return([1,0,0,0])
-            return [1,1,0,0]
+            return [1,1,0,0]"""
 
     def cleanArrs(self):
             for k in range(len(self.learnLine['in'])): self.learnLine['in'].pop()
