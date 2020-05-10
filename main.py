@@ -109,12 +109,14 @@ for i in f.candles:
                 ANN = learn(br, ANN['syn0'], ANN['syn1'])
                 myerr = myerr + ANN['err']
                 if(maxErr < ANN['err']): maxErr = ANN['err']
-                if ((mainLearnCycle % 2000 == 0) and (startpos% 100 == 0)):
+                """if ((mainLearnCycle % 2000 == 0) and (startpos% 100 == 0)):
                             print("mainLearnCycle: " + str(mainLearnCycle) + ", position: " + str(startpos) + " --> ANN predict forex error:" + str(ANN['err']))
                             print(ANN['layer2'])
-                            print(br.learnArrayOut)
+                            print(br.learnArrayOut)"""
             startpos = 0
-            if(mainLearnCycle % 100 == 0): print("maxErr: " + str(maxErr) + " err:" + str(myerr/len(f.CurFileData)))
+            if(mainLearnCycle % 1000 == 0): 
+                print("maxErr: " + str(maxErr) + " err:" + str(myerr/len(f.CurFileData)))
+                f_predict.write(str(maxErr) + " err:" + str(myerr/len(f.CurFileData) + "\n")
             random.shuffle(f.CurFileData) #каждый раз подаём данные для обучения в рандомном порядке. это увеличит общее время, но улучшит качество обучения
         ANN['data'] = np.array([mytime[i], f1[0], f1[1], br.mode])
         np.savez(f.SynFilePatn[i], syn0 = ANN['syn0'], syn1 = ANN['syn1'], data = ANN['data']) #сохраняем синапсы в файл с синапсами
