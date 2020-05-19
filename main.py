@@ -23,8 +23,8 @@ def learn(br, syn0, syn1):
     layer2_delta = layer2_error*nonlin(layer2,deriv=True)
     layer1_error = layer2_delta.dot(syn1.T)
     layer1_delta = layer1_error * nonlin(layer1,deriv=True)
-    syn1 += 0.05 * layer1.T.dot(layer2_delta)
-    syn0 += 0.05 * layer0.T.dot(layer1_delta)
+    syn1 += 0.02 * layer1.T.dot(layer2_delta)
+    syn0 += 0.02 * layer0.T.dot(layer1_delta)
     output['syn0'] = syn0 #для продолжения обучения
     output['syn1'] = syn1 #для продолжения обучения
     output['layer2'] = layer2 #для понимания хода обучения
@@ -83,6 +83,7 @@ for i in f.candles:
             print("synapse file reading error. new synapses created")
     ######---------start learn
     f.LearnLogF.write(str(i) + '\n')
+    f_predict.write(str(i) + '\n')
     for mainLearnCycle in range(1000): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
             f.getData(f.Learniles[i], candleCount[i])
             startpos = br.createLearnArray(f.CurFileData, 0)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
