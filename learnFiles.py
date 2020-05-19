@@ -48,6 +48,7 @@ class learnFiles:
                         self.appVal(self.inputLine, tmp2)
                         learnfile.write(str(self.learnLine['in']) + str(self.learnLine['out']) + '\n')
                         inputFile.write(str(self.inputLine) + '\n')
+                    files.seek(0) #и возвращаем(ся) к началу
             else:
                 print("нет правил для свечей типа " +i)
                 self.success[i] = False
