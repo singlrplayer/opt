@@ -61,10 +61,11 @@ print("start creating rows and learning")
 f_predict = open("predict.txt",'a')
 ######## надо будет это форкать по всем типам свечей
 for i in f.candles: 
-    print (i)
     if(f.QfilePath[i] == ''): 
         f.TmpFilePath = f.QfilePath[i]
-        continue #если есть исходный файл нужной нам свечки -- едем дальше
+        print(str(i) + ": no learn data"))
+        continue 
+    #если есть исходный файл нужной нам свечки -- едем дальше
     mytime[i] = time.time()
     f1 = candlecreateASIS(f.Qfiles[i], f.TmpFiles[i], int(f.candles_enc[i])) #потом разберемся. пока стоит попробовать так
     lf.doLearnlogic(f.TmpFiles[i], br, i, f.Learniles[i], f.InputFiles[i])#делаем обучающие файлы
