@@ -23,8 +23,8 @@ def learn(br, syn0, syn1):
     layer2_delta = layer2_error*nonlin(layer2,deriv=True)
     layer1_error = layer2_delta.dot(syn1.T)
     layer1_delta = layer1_error * nonlin(layer1,deriv=True)
-    syn1 += 0.015 * layer1.T.dot(layer2_delta)
-    syn0 += 0.015 * layer0.T.dot(layer1_delta)
+    syn1 += 0.001 * layer1.T.dot(layer2_delta)
+    syn0 += 0.001 * layer0.T.dot(layer1_delta)
     output['syn0'] = syn0 #для продолжения обучения
     output['syn1'] = syn1 #для продолжения обучения
     output['layer2'] = layer2 #для понимания хода обучения
