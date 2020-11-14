@@ -64,19 +64,19 @@ class learnFiles:
             s.append(self.encodeVal(self.doBlur(self.candle[2], rules.shadowRules[canletype])))
         else: #иначе нам надо закодировать ВЫХОД () 
             #s = self.encodeOutVal(self.doBlur(self.candle[1], rules.bodyRules[canletype]))
-            s = self.encodeVal(self.doBlur((round((float(y.closeVal) - float(y.openVal)),self.roundVal)), rules.bodyRules[canletype]))
+            s = self.encodeVal(self.doBlur((round(float(y.closeVal), self.roundVal) - round(float(y.openVal),self.roundVal)), rules.bodyRules[canletype]))
         return s #format: [upahadow, body, downshadow]
 
     def getCandleVal(self,y,rules, canletype):
-        self.candle[1] = round((float(y.closeVal) - float(y.openVal)), self.roundVal)
+        self.candle[1] = round(float(y.closeVal),self.roundVal) - round(float(y.openVal), self.roundVal)
         if(self.candle[1] > 0): #if bull candle
-            self.candle[0] = round((float(y.hightVal) - float(y.closeVal)), self.roundVal)
+            self.candle[0] = round(float(y.hightVal), self.roundVal) - round(float(y.closeVal), self.roundVal)
             #self.candle[2] = round((float(y.openVal) - float(y.lowVal)),self.roundVal)
-            self.candle[2] = round((float(y.lowVal) - float(y.openVal)),self.roundVal) # попробуем так. это же, все-таки, нижняя тень
+            self.candle[2] = round(float(y.lowVal), self.roundVal) - round(float(y.openVal),self.roundVal) # попробуем так. это же, все-таки, нижняя тень
         else: #if bear candle
-            self.candle[0] = round((float(y.hightVal) - float(y.openVal)),self.roundVal)
+            self.candle[0] = round(float(y.hightVal), self.roundVal) - round(float(y.openVal),self.roundVal)
             #self.candle[2] = round((float(y.closeVal) - float(y.lowVal)),self.roundVal)
-            self.candle[2] = round((float(y.lowVal) - float(y.closeVal)),self.roundVal) # аналогияно
+            self.candle[2] = round(float(y.lowVal), self.roundVal) - round(float(y.closeVal),self.roundVal) # аналогияно
 
     def doBlur(self, v, rule):
         val = round(v, self.roundVal)
@@ -98,19 +98,19 @@ class learnFiles:
         if (val > 0):
             if (val == 1): return([0,0,0,1])
             if (val == 2): return([0,0,1,1])
-            if (val == 3): return([0,1,1,1])
+            #if (val == 3): return([0,1,1,1])
             #if (val == 4): return([0,1,0,0])
             #if (val == 5): return([0,1,0,1])
             #if (val == 6): return([0,1,1,0])
-            return([1,1,1,1])
+            return([0,0,1,1])
         else :  #if (val > 0):
             if (val == -1): return([1,0,0,0])
-            if (val == -2): return([1,1,0,0])
+            #if (val == -2): return([1,1,0,0])
             #if (val == -3): return([1,0,1,1])
             #if (val == -4): return([1,1,0,0])
             #if (val == -5): return([1,1,0,1])
             #if (val == -6): return([1,1,1,0])
-            return([1,1,1,0])
+            return([1,1,0,0])
 
     """def encodeOutVal(self, v): #кодируем в троичной системе значения выхода (10, 00, 01)
         val = (int(v) - 10) # 
