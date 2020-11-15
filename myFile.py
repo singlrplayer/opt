@@ -162,7 +162,7 @@ class myFile:
             tmp = line.split('][')
             if(tmp[1] in out): out[tmp[1]] = out[tmp[1]] + 1
             else: out[tmp[1]] = 1        
-        if(outnorm > (len(out))): print("WARING: learn data has " + str(len(out)) + " candles of " + str(outnorm)) # значит данные для обучения не полные. нужно непременно об этом сообщить
+        #if(outnorm > (len(out))): print("WARING: learn data has " + str(len(out)) + " candles of " + str(outnorm)) # значит данные для обучения не полные. нужно непременно об этом сообщить
         tmp1 = [] #здесь будут временно жить нормализированные данные для обучения
         for line in self.CurFileData: # теперь уберём всё лишнее
             tmp = line.split('][')

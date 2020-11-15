@@ -23,8 +23,8 @@ def learn(br, syn0, syn1):
     layer2_delta = layer2_error*nonlin(layer2,deriv=True)
     layer1_error = layer2_delta.dot(syn1.T)
     layer1_delta = layer1_error * nonlin(layer1,deriv=True)
-    syn1 += 0.001 * layer1.T.dot(layer2_delta)
-    syn0 += 0.001 * layer0.T.dot(layer1_delta)
+    syn1 += round(1 / (10 - random.randint(0,9)),3) * layer1.T.dot(layer2_delta)
+    syn0 += round(1 / (10 - random.randint(0,9)),3) * layer0.T.dot(layer1_delta)
     output['syn0'] = syn0 #для продолжения обучения
     output['syn1'] = syn1 #для продолжения обучения
     output['layer2'] = layer2 #для понимания хода обучения
@@ -85,7 +85,7 @@ for i in f.candles:
     ######---------start learn
     f.LearnLogF.write(str(i) + '\n')
     f_predict.write(str(i) + '\n')
-    for mainLearnCycle in range(10000): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
+    for mainLearnCycle in range(1000): # цикл, в котором идём по всему файлу обучения пачками по 1 строк
             f.getData(f.Learniles[i], candleCount[i])
             startpos = br.createLearnArray(f.CurFileData, 0)#three means [0]->upshadow, [1] -> boady, [2] -> downshadow
             ANN['err'] = maxErr = 0 #максимальная и прочая ошибка в ходе обучения за данный цикл
@@ -102,10 +102,10 @@ for i in f.candles:
                 ANN = learn(br, ANN['syn0'], ANN['syn1'])
                 myerr = myerr + ANN['err']
                 if(maxErr < ANN['err']): maxErr = ANN['err']
-                """if ((mainLearnCycle % 2000 == 0) and (startpos% 100 == 0)):
+                if ((mainLearnCycle % 200 == 0) and (startpos% 100 == 0)):
                             print("mainLearnCycle: " + str(mainLearnCycle) + ", position: " + str(startpos) + " --> ANN predict forex error:" + str(ANN['err']))
                             print(ANN['layer2'])
-                            print(br.learnArrayOut)"""
+                            print(br.learnArrayOut)
             startpos = 0
             if(mainLearnCycle % 100 == 0): 
                 print("maxErr: " + str(maxErr) + " err:" + str(myerr/len(f.CurFileData)))
